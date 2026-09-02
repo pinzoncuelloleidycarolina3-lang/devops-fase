@@ -1,14 +1,9 @@
-FROM python:3.11-slim
+ # IMAGEN OBSOLETA — Trivy detectará CVEs CRITICAL/HIGH
+FROM python:3.8    # EOL, sin parches de seguridad desde oct 2024
 
 WORKDIR /app
-
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
-
 EXPOSE 5000
-
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
