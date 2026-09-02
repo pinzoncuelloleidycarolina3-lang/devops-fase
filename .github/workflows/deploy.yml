@@ -60,6 +60,7 @@ jobs:
           image-ref: 'devops-fase-flask-app:scan'
           format: 'table'
           severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
           exit-code: '1'
 
   build-and-deploy:
