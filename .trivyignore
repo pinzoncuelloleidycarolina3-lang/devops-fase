@@ -1,0 +1,6 @@
+# Vulnerabilidades en herramientas internas de pip (vendorizadas), no en dependencias directas del proyecto.
+# Riesgo aceptado: no son parte del código de la aplicacion ni de requirements.txt
+GHSA-6v7p-g79w-8964
+CVE-2025-47273
+CVE-2026-23949
+CVE-2026-24049
