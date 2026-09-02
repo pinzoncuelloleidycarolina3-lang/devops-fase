@@ -1,0 +1,53 @@
+services:
+  flask-app:
+    build: .
+    container_name: flask-app
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=flaskuser
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=flaskdb
+    depends_on:
+      - mysql-db
+    networks:
+      - app-network
+    expose:
+      - "5000"
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=flaskdb
+      - MYSQL_USER=flaskuser
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - npm-data:/data
+      - npm-letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  npm-data:
+  npm-letsencrypt:
