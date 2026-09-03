@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 DB_HOST = os.environ.get("DB_HOST", "mysql-db")
 DB_USER = os.environ.get("DB_USER", "flaskuser")
-DB_PASSWORD = "SuperClaveSecreta123!"  # <-- vulnerabilidad intencional: password hardcodeado
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_NAME = os.environ.get("DB_NAME", "flaskdb")
 
 
