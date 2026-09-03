@@ -24,6 +24,8 @@ services:
       - MYSQL_DATABASE=flaskdb
       - MYSQL_USER=flaskuser
       - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -43,6 +45,28 @@ services:
     networks:
       - app-network
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks:
+      - app-network
+    expose:
+      - "3001"
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - app-network
+    expose:
+      - "8080"
+
 networks:
   app-network:
     driver: bridge
@@ -51,3 +75,4 @@ volumes:
   mysql-data:
   npm-data:
   npm-letsencrypt:
+  uptime-kuma-data:
