@@ -1,26 +1,44 @@
 import os
-from flask import Flask, jsonify
 import pymysql
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# ⚠️  VULNERABILIDAD INTENCIONAL — Bandit B105
-# Credencial quemada en código fuente
-DB_PASSWORD = "SuperSecreta123!"   # <-- esto dispara Bandit HIGH
-DB_HOST     = os.getenv("DB_HOST", "db")
-DB_NAME     = os.getenv("MYSQL_DATABASE", "impulsapro")
+DB_HOST = os.environ.get("DB_HOST", "mysql-db")
+DB_USER = os.environ.get("DB_USER", "flaskuser")
+DB_PASSWORD = "SuperClaveSecreta123!"  # <-- vulnerabilidad intencional: password hardcodeado
+DB_NAME = os.environ.get("DB_NAME", "flaskdb")
 
-def get_connection():
+
+def get_db_connection():
     return pymysql.connect(
         host=DB_HOST,
-        user="root",
-        password=DB_PASSWORD,   # hardcoded
+        user=DB_USER,
+        password=DB_PASSWORD,
         database=DB_NAME,
+        connect_timeout=5
     )
+
+
+@app.route("/")
+def home():
+    return jsonify({"status": "ok", "message": "API Flask corriendo correctamente"}), 200
+
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok"}), 200
+    return jsonify({"status": "healthy"}), 200
+
+
+@app.route("/db-status")
+def db_status():
+    try:
+        conn = get_db_connection()
+        conn.close()
+        return jsonify({"database": "connected"}), 200
+    except Exception as e:
+        return jsonify({"database": "error", "detail": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
